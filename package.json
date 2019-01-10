@@ -1,0 +1,29 @@
+{
+  name: "bs-breaker",
+  version: "8.0.0",
+  description: "BuckleScript circuit breaker",
+  scripts: {
+    build: "bsb -make-world",
+    webpack: "webpack -w",
+    start: "bsb -make-world -w"
+  },
+  keywords: [
+    "circuit breaker",
+    "bucklescript",
+    "reason"
+  ],
+  author: "Jason Clark <mithereal@gmail.com>",
+  license: "MIT",
+  repository: {
+    type: "git",
+    url: "git+https://github.com/mithereal/bs-breaker.git"
+  },
+  dependencies: {
+
+  },
+  devDependencies: {
+    bs-platform: "^4.0.14",
+    reason-react: "^0.5.3",
+    webpack: "^3.12.0"
+  }
+}
