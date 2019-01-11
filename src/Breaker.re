@@ -116,8 +116,15 @@ let executeCommand = (command) => {
 let executeFallback = (fallback) => {
    fallback()
 
-    let bucket = lastBucket()
+   let reversed = List.rev buckets
+   let hd = List.hd reversed
+   let tl = List.tl reversed
+   let modified = List.rev tl
+   let bucket = hd
+
     bucket.shortCircuits + 1
+
+    buckets = modified ++ bucket
 }
 
 let calculateMetrics = () => {
