@@ -4,17 +4,18 @@ open Type;
 
 let state = OPEN
 let forced = FALSE
-let windowDuration = 1000
-let numBuckets = 10
-let timeoutDuration = 3000
-let errorThreshold = 50
-let volumeThreshold = 5
-let interval = 1
-let bucketIndex = 0;
 let timeout = None
 let buckets = None
 
-let bucketDuration = windowDuration / numBuckets
+let windowDuration = ref(1000)
+let numBuckets = ref(10)
+let timeoutDuration = ref(3000)
+let errorThreshold = ref(50)
+let volumeThreshold = ref(5)
+let interval = ref(1)
+let bucketIndex = ref(0)
+
+let bucketDuration = windowDuration^ / numBuckets^
 
 let extractBuckets = () =>{
 
@@ -30,6 +31,17 @@ switch(state){
 | OPEN => true
 | HALF_OPEN => false
 | CLOSED => false
+}
+}
+
+
+let getValue = (x) =>{
+
+switch(x){
+| None => None
+| HALF_OPEN => HALF_OPEN
+| CLOSED => CLOSED
+| FALSE => FALSE
 }
 }
 
@@ -51,21 +63,25 @@ List.hd(reversed)
 
 let forceOpen = () => {
 
-let forced = state;
-let state = OPEN
+let value = getValue(state);
+forced := value;
+state := OPEN
 }
 
 let forceClose = () => {
 
-let forced = state;
-let state = CLOSED
+let value = getValue(state);
+forced := value;
+state := CLOSED
 }
 
 let unForce = () => {
 
-let state = forced;
-let forced = FALSE
+let value = getValue(forced);
+state := value;
+forced := FALSE
 }
+
 
 let executeCommand = (command) => {
 
@@ -88,9 +104,11 @@ let executeFallback = (fallback) => {
 
                     last.shortCircuits + 1;
 
-                    let buckets =  [last];
+                    let buckets =  [modified, ...last];
                     Some(buckets)
-   }
+   };
+
+   buckets := buckets
 }
 
 let calculateMetrics = () => {
@@ -100,10 +118,7 @@ let errorCount = 0;
 let errorPercentage = 0;
 let first = 0;
 
-let buckets = switch(buckets){
-   | None => []
-   | Some(b) => b
-   }
+let buckets = extractBuckets();
 
 let last = List.length (buckets);
 
@@ -134,28 +149,28 @@ if(state == HALF_OPEN){
 
 let last = lastBucket();
 
-let state = switch(last.successes == 0 && metrics.errorCount > 0){
+state := switch(last.successes == 0 && metrics.errorCount > 0){
 | true =>  OPEN
 | false => CLOSED
 };
 
 }else{
 
-let overErrorThreshold = metrics.errorPercentage > errorThreshold;
-let overVolumeThreshold = metrics.totalCount > volumeThreshold;
+let overErrorThreshold = metrics.errorPercentage > errorThreshold^;
+let overVolumeThreshold = metrics.totalCount > volumeThreshold^;
 let overThreshold = overVolumeThreshold && overErrorThreshold;
 
-let state =
+state :=
 if(overThreshold == true){
 
- OPEN
-
+OPEN
 }else{
+
 state
 };
 
 };
-state;
+
 }
 
 
@@ -178,6 +193,9 @@ let timeout = switch (timeout) {
 
                 [%bs.raw {| clearTimeout(t) |}];
 
+                buckets := buckets;
+                forced := forced;
+
                  false
          };
          timeout
@@ -191,16 +209,11 @@ let len =
     | Some(b) => List.length(b)
     };
 
-let buckets_list =
-    switch(buckets){
-    | None => []
-    | Some(b) => b
-    };
 
 let buckets =
  switch(len > numBuckets){
- | true => let bucketl = List.tl(buckets_list);
-            Some(bucketl)
+ | true => let buckets = List.tl(extractBuckets());
+            Some(buckets)
  | false => buckets
  };
 
@@ -217,11 +230,12 @@ let newbucket = createBucket();
 let buckets =
     switch(buckets){
     | None => []
-    | Some(b) => [newbucket]
+    | Some(b) => [buckets, ...[newbucket]]
     };
 
 let buckets = Some(buckets);
-(buckets, bucketIndex)
+buckets := buckets;
+bucketIndex := bucketIndex
 }
 
 let startTicker = () => {

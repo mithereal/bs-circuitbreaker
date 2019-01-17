@@ -1,8 +1,10 @@
 
 type state =
+| FALSE
 | CLOSED
 | OPEN
 | HALF_OPEN
+| None
 
 type bucket = {
 failures: int,
@@ -22,7 +24,8 @@ type forced =
 | CLOSED
 | OPEN
 | HALF_OPEN
+| None
 
-type timeout = option(boolean)
+type timeout = option(bool)
 
 type buckets = option(list(bucket))
