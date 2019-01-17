@@ -23,4 +23,6 @@ type forced =
 | OPEN
 | HALF_OPEN
 
+type timeout = option(boolean)
+
 type buckets = option(list(bucket))
