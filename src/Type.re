@@ -4,7 +4,6 @@ type state =
 | CLOSED
 | OPEN
 | HALF_OPEN
-| None
 
 type bucket = {
 failures: int,
@@ -18,13 +17,6 @@ totalCount: int,
 errorCount: int,
 errorPercentage: int
 }
-
-type forced =
-| FALSE
-| CLOSED
-| OPEN
-| HALF_OPEN
-| None
 
 type timeout = option(bool)
 

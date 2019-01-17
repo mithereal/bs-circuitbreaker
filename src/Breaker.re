@@ -3,7 +3,7 @@
 open Type;
 
 let state = OPEN
-let forced = FALSE
+let forced:state = FALSE
 let timeout = None
 let buckets = None
 
@@ -31,17 +31,7 @@ switch(state){
 | OPEN => true
 | HALF_OPEN => false
 | CLOSED => false
-}
-}
-
-
-let getValue = (x) =>{
-
-switch(x){
-| None => None
-| HALF_OPEN => HALF_OPEN
-| CLOSED => CLOSED
-| FALSE => FALSE
+| FALSE => false
 }
 }
 
@@ -63,22 +53,19 @@ List.hd(reversed)
 
 let forceOpen = () => {
 
-let value = getValue(state);
-forced := value;
+forced := state;
 state := OPEN
 }
 
 let forceClose = () => {
 
-let value = getValue(state);
-forced := value;
+forced := state;
 state := CLOSED
 }
 
 let unForce = () => {
 
-let value = getValue(forced);
-state := value;
+state := state;
 forced := FALSE
 }
 
