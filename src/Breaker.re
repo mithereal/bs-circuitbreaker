@@ -2,10 +2,10 @@
 
 open Type;
 
-let state = OPEN
-let forced:state = FALSE
-let timeout = None
-let buckets = None
+let state = ref(OPEN)
+let forced = ref(FALSE)
+let timeout = ref(None)
+let buckets = ref(None)
 
 let windowDuration = ref(1000)
 let numBuckets = ref(10)
@@ -19,7 +19,7 @@ let bucketDuration = windowDuration^ / numBuckets^
 
 let extractBuckets = () =>{
 
-switch(buckets){
+switch(buckets^){
                | None => []
                | Some(x) => x
                };
@@ -27,7 +27,7 @@ switch(buckets){
 
 let isOpen = () => {
 
-switch(state){
+switch(state^){
 | OPEN => true
 | HALF_OPEN => false
 | CLOSED => false
@@ -53,19 +53,19 @@ List.hd(reversed)
 
 let forceOpen = () => {
 
-forced := state;
+forced := state^;
 state := OPEN
 }
 
 let forceClose = () => {
 
-forced := state;
+forced := state^;
 state := CLOSED
 }
 
 let unForce = () => {
 
-state := state;
+state := state^;
 forced := FALSE
 }
 
@@ -82,7 +82,7 @@ let executeFallback = (fallback) => {
 
    fallback();
 
-   let buckets = switch(buckets){
+   let buckets = switch(buckets^){
    | None => None
    | Some(b) => let reversed = List.rev (b);
                    let last = List.hd (reversed);
@@ -91,8 +91,8 @@ let executeFallback = (fallback) => {
 
                     last.shortCircuits + 1;
 
-                    let buckets =  [modified, ...last];
-                    Some(buckets)
+                    let new_buckets =  List.append(modified, [last]);
+                    Some(new_buckets)
    };
 
    buckets := buckets
@@ -169,7 +169,7 @@ let timeout = switch (timeout) {
 
                 bucket[prop] + 1;
 
-                let buckets =  [bucket];
+                let buckets =  List.append(modified, [bucket]);
                 let forced = None;
 
                 if(forced == None){
@@ -212,17 +212,15 @@ let bucketIndex =
          | false => bucketIndex
          };
 
+bucketIndex := bucketIndex
+
 let newbucket = createBucket();
 
-let buckets =
     switch(buckets){
-    | None => []
-    | Some(b) => [buckets, ...[newbucket]]
+    | None => None
+    | Some(b) => let buckets = List.append(buckets, [newbucket]);
+                     buckets := Some(buckets)
     };
-
-let buckets = Some(buckets);
-buckets := buckets;
-bucketIndex := bucketIndex
 }
 
 let startTicker = () => {
