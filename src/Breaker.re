@@ -89,9 +89,14 @@ let executeFallback = (fallback) => {
                    let middle = List.tl (reversed);
                    let modified = List.rev (middle);
 
-                    last.shortCircuits + 1;
+                    let newbucket:bucket = {
+                    failures: last.failures,
+                    successes: last.successes,
+                    timeouts: last.timeouts,
+                    shortCircuits: last.shortCircuits + 1
+                    }
 
-                    let new_buckets =  List.append(modified, [last]);
+                    let new_buckets =  List.append(modified, [newbucket]);
                     Some(new_buckets)
    };
 
