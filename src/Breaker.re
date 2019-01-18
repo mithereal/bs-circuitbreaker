@@ -185,7 +185,8 @@ let timeout = switch (timeout) {
 
                  false
          };
-         timeout
+
+timeout := timeout
 }
 
 let tick = (bucketIndex) => {
