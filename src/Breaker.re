@@ -105,22 +105,21 @@ let executeFallback = (fallback) => {
 
 let calculateMetrics = () => {
 
-let totalCount = 0;
-let errorCount = 0;
-let errorPercentage = 0;
-let first = 0;
+let totalCount = ref(0);
+let errorCount = ref(0);
+let errorPercentage = ref(0);
 
 let buckets = extractBuckets();
 
 let last = List.length (buckets);
 
-for(x in first to last){
+for(x in 0 to last){
 
 let bucket = List.nth(buckets, x);
 let errors = bucket.failures + bucket.timeouts;
 
-let errorCount = errorCount + errors;
-let totalCount = errors + bucket.successes;
+errorCount := errorCount + errors;
+totalCount := errors + bucket.successes;
 }
 
 let metrics = {
@@ -133,7 +132,7 @@ let metrics = {
  metrics
 }
 
-let updateState = (buckets) => {
+let updateState = () => {
 
 let metrics = calculateMetrics();
 
@@ -150,6 +149,7 @@ state := switch(last.successes == 0 && metrics.errorCount > 0){
 
 let overErrorThreshold = metrics.errorPercentage > errorThreshold^;
 let overVolumeThreshold = metrics.totalCount > volumeThreshold^;
+
 let overThreshold = overVolumeThreshold && overErrorThreshold;
 
 state :=
@@ -179,13 +179,13 @@ let timeout = switch (timeout) {
 
                 if(forced == None){
 
-                 updateState(buckets);
+                 updateState();
 
                  };
 
                 [%bs.raw {| clearTimeout(t) |}];
 
-                buckets := buckets;
+                buckets := Some(buckets);
                 forced := forced;
 
                  false
@@ -197,7 +197,7 @@ timeout := timeout
 let tick = (bucketIndex) => {
 
 let len =
-    switch(buckets){
+    switch(buckets^){
     | None => 0
     | Some(b) => List.length(b)
     };
@@ -224,7 +224,7 @@ let newbucket = createBucket();
 
     switch(buckets){
     | None => None
-    | Some(b) => let buckets = List.append(buckets, [newbucket]);
+    | Some(b) => let buckets = List.append(b, [newbucket]);
                      buckets := Some(buckets)
     };
 }
