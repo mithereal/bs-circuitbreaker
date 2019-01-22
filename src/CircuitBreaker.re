@@ -4,8 +4,8 @@ open Type;
 
 let state = ref(OPEN)
 let forced = ref(FALSE)
-let timeout = ref(None)
-let buckets = ref(None)
+let timeout = ref(None : option(string))
+let buckets = ref(None : buckets)
 
 let windowDuration = ref(1000)
 let numBuckets = ref(10)
@@ -208,40 +208,7 @@ let tO = switch (timeout^) {
  timeout := tO
 }
 
-let tick = (bucketIndex) => {
 
-let len =
-    switch(buckets^){
-    | None => 0
-    | Some(b) => List.length(b)
-    };
-
-
-let buckets =
- switch(len > numBuckets^){
- | true => let buckets = List.tl(extractBuckets());
-            Some(buckets)
- | false => buckets^
- };
-
- bucketIndex := bucketIndex^ + 1;
-
-let bI =
-    switch (bucketIndex^ > numBuckets^) {
-         | true => 0
-         | false => bucketIndex^
-         };
-
- bucketIndex := bI
-
-let newbucket = createBucket();
-
-    switch(buckets){
-    | None => None
-    | Some(b) => let bs = List.append(b, [newbucket]);
-                    /* buckets := Some(bs) */
-    };
-}
 
 let startTicker = () => {
 
@@ -254,6 +221,8 @@ let run = (command, fallback) => {
 switch(state^){
 | OPEN => executeCommand(command)
 | CLOSED => executeFallback(fallback)
+| HALF_OPEN => executeFallback(fallback)
+| FALSE => executeFallback(fallback)
 }
 }
 

@@ -1,7 +1,12 @@
 {
   "name": "bs-circuitbreaker",
-  "version": "8.0.0",
+  "version": "1.0.0",
   "description": "BuckleScript circuit breaker",
+  "author": "Jason Clark <mithereal@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/mithereal/bs-circuitbreaker",
+  "repositoy": "https://github.com/mithereal/bs-circuitbreaker.git",
+  "bugs": "https://github.com/mithereal/bs-circuitbreaker/issues",
   "scripts": {
     "build": "bsb -make-world",
     "webpack": "webpack -w",
@@ -12,8 +17,6 @@
     "bucklescript",
     "reason"
   ],
-  "author": "Jason Clark <mithereal@gmail.com>",
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mithereal/bs-circuitbreaker.git"
