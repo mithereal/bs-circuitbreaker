@@ -134,8 +134,10 @@ state^
 }
 
 let clear = () => {
+
 forced := FALSE;
 buckets := None;
+
 }
 
 let increment = (prop) =>  {
@@ -186,11 +188,7 @@ let executeCommand = (command) => {
 
     [%bs.raw {| setTimeout(increment('timeouts'), timeoutDuration^) |}];
 
-
-
-
-    command();
-
+    command(increment("successes"), increment("failures"));
 
 }
 
@@ -218,10 +216,8 @@ let executeFallback = (fallback) => {
    };
 
    buckets := bs
+
 }
-
-
-
 
 let tick = (bucketIndex) => {
 
@@ -256,6 +252,7 @@ let newbucket = createBucket();
     | Some(b) => let bs = List.append(b, [newbucket]);
                       Some(bs)
     };
+
 buckets := b
 
 }
@@ -266,6 +263,7 @@ let startTicker = () => {
 
 }
 
+
 let run = (command, fallback) => {
 
 switch(state^){
@@ -274,5 +272,6 @@ switch(state^){
 | HALF_OPEN => executeFallback(fallback)
 | FALSE => executeFallback(fallback)
 }
+
 }
 
