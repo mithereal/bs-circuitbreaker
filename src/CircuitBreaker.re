@@ -70,39 +70,6 @@ forced := FALSE
 }
 
 
-let executeCommand = (command) => {
-
-   /* [%bs.raw {| setTimeout(increment('timeouts'), timeoutDuration^) |}]; */
-
-    command();
-}
-
-
-let executeFallback = (fallback) => {
-
-   fallback();
-
-   let bs = switch(buckets^){
-   | None => None
-   | Some(b) => let reversed = List.rev (b);
-                   let last = List.hd (reversed);
-                   let middle = List.tl (reversed);
-                   let modified = List.rev (middle);
-
-                    let newbucket:bucket = {
-                    failures: last.failures,
-                    successes: last.successes,
-                    timeouts: last.timeouts,
-                    shortCircuits: last.shortCircuits + 1
-                    }
-
-                    let new_buckets =  List.append(modified, [newbucket]);
-                    Some(new_buckets)
-   };
-
-   buckets := bs
-}
-
 let calculateMetrics = () => {
 
 let totalCount = ref(0);
@@ -131,6 +98,7 @@ let metrics = {
 
  metrics
 }
+
 
 let updateState = () => {
 
@@ -165,6 +133,11 @@ state^
 
 }
 
+let clear = () => {
+forced := FALSE;
+buckets := None;
+}
+
 let increment = (prop) =>  {
 
 let tO = switch (timeout^) {
@@ -196,19 +169,96 @@ let tO = switch (timeout^) {
 
                  };
 
-                [%bs.raw {| clearTimeout(t) |}];
+                 clear();
 
-               /* buckets := None; */
-               /* forced := None; */
+                [%bs.raw {| clearTimeout(t) |}];
 
          };
          None
          };
 
- timeout := tO
+ timeout := tO;
+
 }
 
 
+let executeCommand = (command) => {
+
+    [%bs.raw {| setTimeout(increment('timeouts'), timeoutDuration^) |}];
+
+
+
+
+    command();
+
+
+}
+
+
+let executeFallback = (fallback) => {
+
+   fallback();
+
+   let bs = switch(buckets^){
+   | None => None
+   | Some(b) => let reversed = List.rev (b);
+                   let last = List.hd (reversed);
+                   let middle = List.tl (reversed);
+                   let modified = List.rev (middle);
+
+                    let newbucket:bucket = {
+                    failures: last.failures,
+                    successes: last.successes,
+                    timeouts: last.timeouts,
+                    shortCircuits: last.shortCircuits + 1
+                    }
+
+                    let new_buckets =  List.append(modified, [newbucket]);
+                    Some(new_buckets)
+   };
+
+   buckets := bs
+}
+
+
+
+
+let tick = (bucketIndex) => {
+
+let len =
+    switch(buckets^){
+    | None => 0
+    | Some(b) => List.length(b)
+    };
+
+
+let thebuckets =
+ switch(len > numBuckets^){
+ | true => let bs = List.tl(extractBuckets());
+            Some(bs)
+ | false => buckets^
+ };
+
+ bucketIndex := bucketIndex^ + 1;
+
+let bI =
+    switch (bucketIndex^ > numBuckets^) {
+         | true => 0
+         | false => bucketIndex^
+         };
+
+ bucketIndex := bI
+
+let newbucket = createBucket();
+
+    let b = switch(thebuckets){
+    | None => None
+    | Some(b) => let bs = List.append(b, [newbucket]);
+                      Some(bs)
+    };
+buckets := b
+
+}
 
 let startTicker = () => {
 
