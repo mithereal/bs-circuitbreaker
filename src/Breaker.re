@@ -167,7 +167,7 @@ state^
 
 let increment = (prop) =>  {
 
-let timeout = switch (timeout^) {
+let tO = switch (timeout^) {
          | None => None
          | Some(t) => let bucket = lastBucket();
 
@@ -205,7 +205,7 @@ let timeout = switch (timeout^) {
          None
          };
 
-/* timeout := false */
+ timeout := tO
 }
 
 let tick = (bucketIndex) => {
