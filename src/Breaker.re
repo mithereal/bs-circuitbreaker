@@ -226,20 +226,20 @@ let buckets =
 
  bucketIndex := bucketIndex^ + 1;
 
-let bucketIndex =
+let bI =
     switch (bucketIndex^ > numBuckets^) {
          | true => 0
          | false => bucketIndex^
          };
 
-/* bucketIndex := bucketIndex^ */
+ bucketIndex := bI
 
 let newbucket = createBucket();
 
     switch(buckets){
     | None => None
-    | Some(b) => let buckets = List.append(b, [newbucket]);
-                    /* buckets := Some(buckets) */
+    | Some(b) => let bs = List.append(b, [newbucket]);
+                    /* buckets := Some(bs) */
     };
 }
 
