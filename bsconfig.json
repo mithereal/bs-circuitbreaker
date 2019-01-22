@@ -1,5 +1,5 @@
 {
-  "name": "bs-breaker",
+  "name": "bs-circuitbreaker",
   "bsc-flags": [
   "-bs-super-errors",
   "-w",

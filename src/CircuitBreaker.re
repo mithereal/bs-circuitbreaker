@@ -179,7 +179,7 @@ let tO = switch (timeout^) {
                             let modified = List.rev (middle);
 
 
-           let b = switch(t){
+           let b = switch(prop){
             | "failures" => bucket.failures + 1;
             | "successes" => bucket.successes + 1;
             | "timeouts" => bucket.timeouts + 1;
@@ -251,7 +251,7 @@ let startTicker = () => {
 
 let run = (command, fallback) => {
 
-switch state{
+switch(state^){
 | OPEN => executeCommand(command)
 | CLOSED => executeFallback(fallback)
 }

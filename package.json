@@ -1,5 +1,5 @@
 {
-  "name": "bs-breaker",
+  "name": "bs-circuitbreaker",
   "version": "8.0.0",
   "description": "BuckleScript circuit breaker",
   "scripts": {
@@ -16,7 +16,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mithereal/bs-breaker.git"
+    "url": "git+https://github.com/mithereal/bs-circuitbreaker.git"
   },
   "dependencies": {
 
