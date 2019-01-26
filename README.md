@@ -9,10 +9,12 @@ we pass the fun we want to run and a failure fun, when the threshold of timeouts
 ###### Example
 let try = () => {
 
+ [%bs.raw {| setTimeout(fn(){ console.log("try is executing for 10000")}, 10000) |}];
+ 
 }
 
 let catch = () => {
-
+Js.log("an error has occurred")
 }
 
 CircuitBreaker.run(try, catch)
